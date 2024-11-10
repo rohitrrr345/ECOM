@@ -21,4 +21,19 @@ func DBSet() *mongo.Client {
 	if err!=nil {
 		log.Fatal(err)
 	}
+	err=client.Ping(context.TODO(),nil)
+	if err!=nil {
+		log.Println("falied to connect to mongodb")
+		return nil
+	}
+	fmt.Println("Mongo Connected ")
+	return client
+
+}
+func UserData(client *mongo.Client,CollectionName string) *mongo.Collection {
+	var collection *mongo.Collection=client.Database("Ecommerce").Collection(CollectionName)
+}
+func ProductData(client *mongo.Client, CollectionName string) *mongo.Collection {
+	var productcollection *mongo.Collection = client.Database("Ecommerce").Collection(CollectionName)
+	return productcollection
 }
