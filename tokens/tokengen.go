@@ -69,3 +69,25 @@ return token, refreshtoken, err
    }
    return claims,msg
   }
+  func UpdateAllTokens(signedtoken string ,signedrefreshtoken string,userid string){
+	var ctx,cancel=context.WithTimeout(context.Background(),100*time.Second)
+	var updateobj primitive.D
+	updateobj=append(updateobj,bson.E{Key:"token",Value:signedtoken})
+	updateobj=append(updateobj,bson.E{key:"refreshtoken",Value:signedrefreshtoken})
+	updated_at,_:=time.Parse(time.RFC3339,time.Now().Format(time.RFC3339))
+	updateobj=append(updateobj,bson.E{Key:"updatedat",Value:updated_at})
+	upsert := true
+	filter := bson.M{"user_id": userid}
+	opt := options.UpdateOptions{
+		Upsert: &upsert,
+	}
+	_, err := UserData.UpdateOne(ctx, filter, bson.D{
+		{Key: "$set", Value: updateobj},
+	},
+		&opt)
+	defer cancel()
+	if err != nil {
+		log.Panic(err)
+		return
+	}
+  }
